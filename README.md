@@ -28,18 +28,24 @@ Standard RAG systems retrieve a fixed number of documents `k` for every query, r
 
 RAGnaros solves this by treating each query as a statistical hypothesis test: *are there significantly more relevant documents than background noise in this corpus?*
 
-### Research results (HotPotQA, 100 questions)
+### Demo results (HotPotQA, 100 questions, local embeddings)
 
-| Method | Accuracy | Cost (100 questions) | Acc / Dollar |
-|---|---|---|---|
-| Fixed k=1 | 59% | $0.009 | 65.6 |
-| Fixed k=7 (best fixed) | 67% | $0.076 | 8.8 |
-| Fixed k=20 | 68% | $0.199 | 3.4 |
-| Bonferroni (α=0.05) | 72% | $0.021 | 34.3 |
-| Benjamini-Hochberg (α=0.05) | 73% | $0.021 | **34.8** |
-| **Higher Criticism (α=0.05)** | **79%** | **$0.040** | **19.8** |
+| Method | Accuracy | Mean k | Est. Tokens | Est. Cost | Token Savings vs k=10 |
+|---|---|---|---|---|---|
+| Fixed k=1 | 69% | 1.0 | 119,173 | $0.131 | -90% |
+| Fixed k=3 | 84% | 3.0 | 358,533 | $0.394 | -70% |
+| Fixed k=5 | 87% | 5.0 | 595,510 | $0.655 | -50% |
+| Fixed k=7 | 88% | 7.0 | 833,103 | $0.916 | -30% |
+| Fixed k=10 | 89% | 10.0 | 1,189,243 | $1.308 | — |
+| **Higher Criticism** | **85%** | **3.5** | **416,785** | **$0.459** | **-65%** |
+| Benjamini-Hochberg | 82% | 3.2 | 381,860 | $0.420 | -68% |
+| Bonferroni | 77% | 2.1 | 243,374 | $0.268 | -80% |
 
-Higher Criticism achieves **+12 percentage points** accuracy over the best fixed-k baseline at **5× lower cost**.
+Higher Criticism achieves **85% accuracy** (comparable to fixed k=5) while using **65% fewer tokens** — retrieving only 3.5 documents on average instead of 10.
+
+<p align="center">
+  <img src="assets/cost_vs_accuracy.png" alt="Cost vs Accuracy" width="80%"/>
+</p>
 
 ---
 
@@ -304,19 +310,47 @@ for r in results:
 
 ## Visualization
 
+RAGnaros includes built-in visualization utilities. Here are outputs from the demo on HotPotQA:
+
+### Token Savings
+
+Dynamic methods dramatically reduce token usage while preserving accuracy:
+
+<p align="center">
+  <img src="assets/token_savings.png" alt="Token Savings" width="80%"/>
+</p>
+
+### k Distribution
+
+Each estimator adapts k per-query — most queries need only 1-2 documents:
+
+<p align="center">
+  <img src="assets/k_distribution.png" alt="k Distribution" width="80%"/>
+</p>
+
+### Null vs Real Similarity Distribution
+
+The statistical foundation: real query-document similarities are clearly separated from the null (unrelated) distribution:
+
+<p align="center">
+  <img src="assets/null_vs_real.png" alt="Null vs Real Distribution" width="80%"/>
+</p>
+
+### Cost Efficiency
+
+<p align="center">
+  <img src="assets/efficiency.png" alt="Accuracy per Dollar" width="80%"/>
+</p>
+
+### Programmatic API
+
 ```python
 from ragnaros.visualization import cost_accuracy_plot, k_distribution_plot, null_vs_real_plot
 
-# Cost vs Accuracy scatter
 fig = cost_accuracy_plot(results)
 fig.savefig("cost_vs_accuracy.png", dpi=150)
 
-# k distribution per dynamic method
 fig = k_distribution_plot(results)
-
-# Null distribution vs real similarities
-import numpy as np
-real_sims = np.array([...])  # cosine similarities from a real query batch
 fig = null_vs_real_plot(null_dist, real_sims)
 ```
 
@@ -339,7 +373,7 @@ Requires `pip install "ragnaros[viz]"`.
 ## Development
 
 ```bash
-git clone https://github.com/yarinshitrit/RAGnaros
+git clone https://github.com/YarinShitrit/Ragnaros
 cd RAGnaros
 pip install -e ".[dev]"
 
