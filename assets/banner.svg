@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0a0a"/>
+      <stop offset="40%" style="stop-color:#2d0f0f"/>
+      <stop offset="100%" style="stop-color:#0d0d1a"/>
+    </linearGradient>
+    <linearGradient id="fire" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff4500"/>
+      <stop offset="40%" style="stop-color:#ff6a00"/>
+      <stop offset="70%" style="stop-color:#ffa500"/>
+      <stop offset="100%" style="stop-color:#ffd700"/>
+    </linearGradient>
+    <linearGradient id="ember" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff4500;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ff6a00;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#ff4500;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="300" fill="url(#bg)"/>
+
+  <!-- Subtle ember line -->
+  <rect x="0" y="248" width="900" height="2" fill="url(#ember)"/>
+
+  <!-- Fire icon (stylized flame) -->
+  <g transform="translate(130, 80)" filter="url(#softglow)">
+    <path d="M40 120 C40 120 15 85 20 55 C23 35 35 25 40 40 C42 30 50 10 55 0 C60 20 70 35 68 55 C72 40 80 45 78 65 C85 50 82 80 75 95 C90 85 85 105 70 115 C65 120 55 125 40 120Z" fill="url(#fire)" opacity="0.9"/>
+    <path d="M40 120 C40 120 25 95 30 70 C33 55 40 50 43 60 C45 45 52 30 55 25 C58 40 63 50 61 65 C65 55 68 60 66 75 C72 68 70 90 60 105 C55 112 48 118 40 120Z" fill="#ffd700" opacity="0.4"/>
+  </g>
+
+  <!-- Main title -->
+  <text x="240" y="145" font-family="'Segoe UI', Arial, sans-serif" font-size="72" font-weight="800" fill="url(#fire)" filter="url(#glow)" letter-spacing="4">RAGnaros</text>
+
+  <!-- Subtitle -->
+  <text x="245" y="185" font-family="'Segoe UI', Arial, sans-serif" font-size="18" fill="#b0b0b0" letter-spacing="1.5">Adaptive k-selection for RAG pipelines</text>
+
+  <!-- Tagline -->
+  <text x="245" y="215" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#707070" letter-spacing="1">Statistical hypothesis testing meets information retrieval</text>
+
+  <!-- Decorative dots -->
+  <circle cx="245" cy="238" r="2" fill="#ff4500" opacity="0.6"/>
+  <circle cx="255" cy="238" r="2" fill="#ff6a00" opacity="0.5"/>
+  <circle cx="265" cy="238" r="2" fill="#ffa500" opacity="0.4"/>
+</svg>
