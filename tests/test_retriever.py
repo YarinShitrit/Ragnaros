@@ -52,10 +52,13 @@ class TestCandidatesMode:
         docs = retriever.invoke("France")
         assert len(docs) <= 3
 
-    def test_all_three_estimators(
+    def test_all_eight_estimators(
         self, fake_vectorstore, fake_embeddings_model, null_distribution
     ):
-        for estimator in ["higher_criticism", "benjamini_hochberg", "bonferroni"]:
+        for estimator in [
+            "higher_criticism", "benjamini_hochberg", "bonferroni",
+            "storey_bh", "local_fdr", "kneedle", "berk_jones", "beta_mixture",
+        ]:
             retriever = DynamicRetriever.from_vectorstore(
                 vectorstore=fake_vectorstore,
                 embeddings=fake_embeddings_model,

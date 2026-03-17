@@ -1,74 +1,161 @@
 [
   {
     "method": "fixed_k=1",
-    "accuracy": 0.69,
+    "display_name": "fixed_k=1",
+    "accuracy": 0.8,
     "mean_k": 1.0,
     "median_k": 1.0,
-    "total_tokens": 119173,
-    "estimated_cost": 0.1311,
-    "acc_per_dollar": 5.3
-  },
-  {
-    "method": "fixed_k=3",
-    "accuracy": 0.84,
-    "mean_k": 3.0,
-    "median_k": 3.0,
-    "total_tokens": 358533,
-    "estimated_cost": 0.3944,
-    "acc_per_dollar": 2.1
+    "total_tokens": 25658,
+    "estimated_cost": 0.0282,
+    "acc_per_dollar": 28.3,
+    "k_distribution": {
+      "1": 20
+    }
   },
   {
     "method": "fixed_k=5",
-    "accuracy": 0.87,
+    "display_name": "fixed_k=5",
+    "accuracy": 0.95,
     "mean_k": 5.0,
     "median_k": 5.0,
-    "total_tokens": 595510,
-    "estimated_cost": 0.6551,
-    "acc_per_dollar": 1.3
-  },
-  {
-    "method": "fixed_k=7",
-    "accuracy": 0.88,
-    "mean_k": 7.0,
-    "median_k": 7.0,
-    "total_tokens": 833103,
-    "estimated_cost": 0.9164,
-    "acc_per_dollar": 1.0
+    "total_tokens": 116002,
+    "estimated_cost": 0.1276,
+    "acc_per_dollar": 7.4,
+    "k_distribution": {
+      "5": 20
+    }
   },
   {
     "method": "fixed_k=10",
-    "accuracy": 0.89,
+    "display_name": "fixed_k=10",
+    "accuracy": 0.95,
     "mean_k": 10.0,
     "median_k": 10.0,
-    "total_tokens": 1189243,
-    "estimated_cost": 1.3082,
-    "acc_per_dollar": 0.7
+    "total_tokens": 229216,
+    "estimated_cost": 0.2521,
+    "acc_per_dollar": 3.8,
+    "k_distribution": {
+      "10": 20
+    }
   },
   {
     "method": "higher_criticism",
-    "accuracy": 0.85,
-    "mean_k": 3.5,
-    "median_k": 2.0,
-    "total_tokens": 416785,
-    "estimated_cost": 0.4585,
-    "acc_per_dollar": 1.9
+    "display_name": "Higher Criticism",
+    "accuracy": 0.9,
+    "mean_k": 1.8,
+    "median_k": 1.0,
+    "total_tokens": 44122,
+    "estimated_cost": 0.0485,
+    "acc_per_dollar": 18.5,
+    "k_distribution": {
+      "1": 12,
+      "2": 6,
+      "8": 1,
+      "4": 1
+    }
   },
   {
     "method": "benjamini_hochberg",
-    "accuracy": 0.82,
-    "mean_k": 3.2,
-    "median_k": 2.0,
-    "total_tokens": 381860,
-    "estimated_cost": 0.42,
-    "acc_per_dollar": 2.0
+    "display_name": "Benjamini-Hochberg",
+    "accuracy": 0.85,
+    "mean_k": 1.4,
+    "median_k": 1.0,
+    "total_tokens": 34920,
+    "estimated_cost": 0.0384,
+    "acc_per_dollar": 22.1,
+    "k_distribution": {
+      "1": 14,
+      "4": 1,
+      "2": 5
+    }
   },
   {
     "method": "bonferroni",
-    "accuracy": 0.77,
-    "mean_k": 2.1,
+    "display_name": "Bonferroni",
+    "accuracy": 0.85,
+    "mean_k": 1.2,
     "median_k": 1.0,
-    "total_tokens": 243374,
-    "estimated_cost": 0.2677,
-    "acc_per_dollar": 2.9
+    "total_tokens": 31989,
+    "estimated_cost": 0.0352,
+    "acc_per_dollar": 24.2,
+    "k_distribution": {
+      "1": 15,
+      "2": 5
+    }
+  },
+  {
+    "method": "storey_bh",
+    "display_name": "Storey-BH",
+    "accuracy": 0.85,
+    "mean_k": 1.4,
+    "median_k": 1.0,
+    "total_tokens": 34920,
+    "estimated_cost": 0.0384,
+    "acc_per_dollar": 22.1,
+    "k_distribution": {
+      "1": 14,
+      "4": 1,
+      "2": 5
+    }
+  },
+  {
+    "method": "local_fdr",
+    "display_name": "Local FDR",
+    "accuracy": 0.8,
+    "mean_k": 1.0,
+    "median_k": 1.0,
+    "total_tokens": 25658,
+    "estimated_cost": 0.0282,
+    "acc_per_dollar": 28.3,
+    "k_distribution": {
+      "1": 20
+    }
+  },
+  {
+    "method": "kneedle",
+    "display_name": "Kneedle",
+    "accuracy": 0.85,
+    "mean_k": 2.0,
+    "median_k": 1.0,
+    "total_tokens": 45644,
+    "estimated_cost": 0.0502,
+    "acc_per_dollar": 16.9,
+    "k_distribution": {
+      "1": 16,
+      "10": 1,
+      "2": 1,
+      "8": 1,
+      "4": 1
+    }
+  },
+  {
+    "method": "berk_jones",
+    "display_name": "Berk-Jones",
+    "accuracy": 0.9,
+    "mean_k": 3.0,
+    "median_k": 1.0,
+    "total_tokens": 67831,
+    "estimated_cost": 0.0746,
+    "acc_per_dollar": 12.1,
+    "k_distribution": {
+      "1": 11,
+      "10": 2,
+      "2": 5,
+      "9": 2
+    }
+  },
+  {
+    "method": "beta_mixture",
+    "display_name": "Beta Mixture",
+    "accuracy": 0.85,
+    "mean_k": 1.2,
+    "median_k": 1.0,
+    "total_tokens": 31989,
+    "estimated_cost": 0.0352,
+    "acc_per_dollar": 24.2,
+    "k_distribution": {
+      "1": 15,
+      "2": 5
+    }
   }
 ]

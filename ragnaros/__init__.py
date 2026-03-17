@@ -36,24 +36,36 @@ from ragnaros._types import EstimatorName, RetrievalMode
 from ragnaros.estimators import (
     ESTIMATORS,
     benjamini_hochberg,
+    berk_jones,
+    beta_mixture,
     bonferroni_correction,
     get_estimator,
     higher_criticism,
+    kneedle,
+    local_fdr,
+    storey_bh,
 )
 from ragnaros.null_distribution import NullDistribution
 from ragnaros.retriever import DynamicRetriever
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Yarin Shitrit"
 
 __all__ = [
     # Core
     "DynamicRetriever",
     "NullDistribution",
-    # Estimators
+    # Estimators — original (v0.1)
     "higher_criticism",
     "benjamini_hochberg",
     "bonferroni_correction",
+    # Estimators — research extension (v0.2)
+    "storey_bh",
+    "local_fdr",
+    "kneedle",
+    "berk_jones",
+    "beta_mixture",
+    # Registry
     "get_estimator",
     "ESTIMATORS",
     # Types

@@ -12,7 +12,16 @@ import numpy as np
 Embedding = np.ndarray  # shape: (D,), dtype float32 or float64
 NullDist = np.ndarray  # shape: (N,), dtype float32
 
-EstimatorName = Literal["higher_criticism", "benjamini_hochberg", "bonferroni"]
+EstimatorName = Literal[
+    "higher_criticism",
+    "benjamini_hochberg",
+    "bonferroni",
+    "storey_bh",
+    "local_fdr",
+    "kneedle",
+    "berk_jones",
+    "beta_mixture",
+]
 EstimatorFn = Callable[
     [
         "Embedding",  # question_emb

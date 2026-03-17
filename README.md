@@ -5,7 +5,8 @@
 <p align="center">
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+"/></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"/></a>
-  <a href="https://pypi.org/project/ragnaros/"><img src="https://img.shields.io/badge/pypi-v0.1.0-orange.svg" alt="PyPI"/></a>
+  <a href="https://pypi.org/project/ragnaros/"><img src="https://img.shields.io/badge/pypi-v0.2.0-orange.svg" alt="PyPI"/></a>
+  <a href="https://github.com/YarinShitrit/Ragnaros/actions"><img src="https://img.shields.io/badge/tests-156%20passed-brightgreen.svg" alt="Tests"/></a>
 </p>
 
 <p align="center">
@@ -28,23 +29,58 @@ Standard RAG systems retrieve a fixed number of documents `k` for every query, r
 
 RAGnaros solves this by treating each query as a statistical hypothesis test: *are there significantly more relevant documents than background noise in this corpus?*
 
-### Demo results (HotPotQA, 100 questions, local embeddings)
+---
 
-| Method | Accuracy | Mean k | Est. Tokens | Est. Cost | Token Savings vs k=10 |
-|---|---|---|---|---|---|
-| Fixed k=1 | 69% | 1.0 | 119,173 | $0.131 | -90% |
-| Fixed k=3 | 84% | 3.0 | 358,533 | $0.394 | -70% |
-| Fixed k=5 | 87% | 5.0 | 595,510 | $0.655 | -50% |
-| Fixed k=7 | 88% | 7.0 | 833,103 | $0.916 | -30% |
-| Fixed k=10 | 89% | 10.0 | 1,189,243 | $1.308 | — |
-| **Higher Criticism** | **85%** | **3.5** | **416,785** | **$0.459** | **-65%** |
-| Benjamini-Hochberg | 82% | 3.2 | 381,860 | $0.420 | -68% |
-| Bonferroni | 77% | 2.1 | 243,374 | $0.268 | -80% |
+## 8 Estimators — From 3 Research Methods to a Comprehensive Toolkit
 
-Higher Criticism achieves **85% accuracy** (comparable to fixed k=5) while using **65% fewer tokens** — retrieving only 3.5 documents on average instead of 10.
+RAGnaros v0.2 includes **8 statistically-grounded estimators** spanning four families of methods:
+
+| Family | Estimator | Method | Key Insight |
+|---|---|---|---|
+| **Hypothesis Testing** | `higher_criticism` | Donoho & Jin (2004) | Detects sparse signals via max p-value deviation |
+| | `benjamini_hochberg` | Benjamini & Hochberg (1995) | Controls False Discovery Rate (FDR) |
+| | `bonferroni` | Bonferroni (1936) | Controls Family-Wise Error Rate (FWER) |
+| | `storey_bh` | Storey (2002) | Adaptive BH with pi0 estimation — strictly more powerful than BH |
+| **Bayesian / Model-Based** | `local_fdr` | Efron (2001) | Per-document posterior probability of relevance |
+| | `beta_mixture` | Pounds & Morris (2003) | EM-fitted Beta-Uniform mixture model on p-values |
+| **Geometric** | `kneedle` | Satopaa et al. (2011) | Elbow detection on similarity curve — parameter-free |
+| **Likelihood Ratio** | `berk_jones` | Berk & Jones (1979) | KL-divergence based goodness-of-fit — dominates Kolmogorov |
+
+### Demo Results (HotPotQA, local embeddings, no API keys needed)
+
+| Method | Accuracy | Mean k | Est. Tokens | Est. Cost | Token Savings vs k=10 | Acc/$ |
+|---|---|---|---|---|---|---|
+| Fixed k=1 | 80% | 1.0 | 25,658 | $0.028 | -89% | 28.3 |
+| Fixed k=5 | 95% | 5.0 | 116,002 | $0.128 | -49% | 7.4 |
+| Fixed k=10 | 95% | 10.0 | 229,216 | $0.252 | — | 3.8 |
+| **Higher Criticism** | **90%** | **1.8** | **44,122** | **$0.049** | **-81%** | **18.5** |
+| **Berk-Jones** | **90%** | **3.0** | **67,831** | **$0.075** | **-70%** | **12.1** |
+| Benjamini-Hochberg | 85% | 1.4 | 34,920 | $0.038 | -85% | 22.1 |
+| Storey-BH | 85% | 1.4 | 34,920 | $0.038 | -85% | 22.1 |
+| Bonferroni | 85% | 1.2 | 31,989 | $0.035 | -86% | 24.2 |
+| Beta Mixture | 85% | 1.2 | 31,989 | $0.035 | -86% | 24.2 |
+| Kneedle | 85% | 2.0 | 45,644 | $0.050 | -80% | 16.9 |
+| Local FDR | 80% | 1.0 | 25,658 | $0.028 | -89% | 28.3 |
+
+**Key findings:**
+- **Higher Criticism** and **Berk-Jones** tie for best accuracy (90%), matching fixed k=5 performance while using 81% and 70% fewer tokens respectively
+- All dynamic methods achieve 80-90% accuracy while saving 70-89% of tokens vs fixed k=10
+- **Local FDR** and **Bonferroni/Beta Mixture** are the most cost-efficient, using only 1-1.2 docs on average
 
 <p align="center">
   <img src="assets/cost_vs_accuracy.png" alt="Cost vs Accuracy" width="80%"/>
+</p>
+
+### Comparison Heatmap
+
+<p align="center">
+  <img src="assets/comparison_heatmap.png" alt="Estimator Comparison Heatmap" width="80%"/>
+</p>
+
+### Sensitivity Analysis — How Alpha Affects k Selection
+
+<p align="center">
+  <img src="assets/sensitivity_alpha.png" alt="Sensitivity Analysis" width="80%"/>
 </p>
 
 ---
@@ -100,7 +136,7 @@ retriever = DynamicRetriever.from_vectorstore(
     vectorstore=vectorstore,
     embeddings=embeddings,
     null_distribution=null_dist,
-    estimator="higher_criticism",  # recommended
+    estimator="higher_criticism",  # or any of the 8 estimators
     alpha=0.05,
     max_k=10,
 )
@@ -124,9 +160,11 @@ That's it. The retriever automatically selects the optimal `k` for each query.
 
 ## Estimators
 
-All three estimators share the same interface and can be swapped via the `estimator` parameter.
+All eight estimators share the same interface and can be swapped via the `estimator` parameter.
 
-### Higher Criticism (recommended)
+### Hypothesis Testing Family
+
+#### Higher Criticism (recommended)
 
 Based on Donoho & Jin (2004). Finds the index where the gap between observed and expected p-values is maximised. Best for sparse signals where only a few documents are truly relevant.
 
@@ -134,7 +172,7 @@ Based on Donoho & Jin (2004). Finds the index where the gap between observed and
 retriever = DynamicRetriever.from_vectorstore(..., estimator="higher_criticism")
 ```
 
-### Benjamini-Hochberg
+#### Benjamini-Hochberg
 
 Controls the False Discovery Rate (FDR) at level `alpha`. Balances between precision and recall. Good general-purpose choice.
 
@@ -142,7 +180,7 @@ Controls the False Discovery Rate (FDR) at level `alpha`. Balances between preci
 retriever = DynamicRetriever.from_vectorstore(..., estimator="benjamini_hochberg")
 ```
 
-### Bonferroni
+#### Bonferroni
 
 Controls the Family-Wise Error Rate (FWER). The most conservative estimator — minimises false positives at the cost of potentially under-retrieving.
 
@@ -150,7 +188,53 @@ Controls the Family-Wise Error Rate (FWER). The most conservative estimator — 
 retriever = DynamicRetriever.from_vectorstore(..., estimator="bonferroni")
 ```
 
-### Custom estimator
+#### Storey-BH (adaptive)
+
+Storey's adaptive BH (2002) estimates the proportion of true nulls (pi0) and adjusts the FDR threshold upward. Strictly more powerful than standard BH when most documents are irrelevant (which is typical in retrieval).
+
+```python
+retriever = DynamicRetriever.from_vectorstore(..., estimator="storey_bh")
+```
+
+### Bayesian / Model-Based Family
+
+#### Local FDR (Empirical Bayes)
+
+Efron's local FDR (2001) estimates the posterior probability that each document is irrelevant. Documents are included if their local FDR is below `alpha`. Produces fine-grained, per-document relevance decisions.
+
+```python
+retriever = DynamicRetriever.from_vectorstore(..., estimator="local_fdr")
+```
+
+#### Beta-Uniform Mixture
+
+Pounds & Morris (2003). Models p-values as a mixture of Uniform(0,1) (null) and Beta(a,1) (signal). Uses EM to fit the mixture and classifies documents based on posterior probabilities.
+
+```python
+retriever = DynamicRetriever.from_vectorstore(..., estimator="beta_mixture")
+```
+
+### Geometric Family
+
+#### Kneedle (elbow detection)
+
+Satopaa et al. (2011). Finds the point of maximum curvature in the sorted similarity curve. Parameter-free (alpha is ignored) and doesn't depend on p-value computation. Robust to misspecified null distributions.
+
+```python
+retriever = DynamicRetriever.from_vectorstore(..., estimator="kneedle")
+```
+
+### Likelihood Ratio Family
+
+#### Berk-Jones
+
+Berk & Jones (1979). Uses a KL-divergence based goodness-of-fit test that is asymptotically optimal for detecting any departure from uniformity in p-values. Strictly more powerful than Higher Criticism for moderate signals.
+
+```python
+retriever = DynamicRetriever.from_vectorstore(..., estimator="berk_jones")
+```
+
+### Custom Estimator
 
 Implement any callable with the signature:
 
@@ -195,8 +279,6 @@ Matches the original research methodology. Requires all corpus embeddings pre-lo
 ```python
 import numpy as np
 
-# Extract all embeddings from Chroma (Chroma-specific helper)
-stored = vectorstore._collection.get(include=["embeddings"])
 corpus_embeddings = np.asarray(stored["embeddings"], dtype=np.float32)
 
 retriever = DynamicRetriever.from_vectorstore(
@@ -236,16 +318,11 @@ null_dist = NullDistribution.from_corpus(
 )
 ```
 
-### Loading a pre-built distribution
+### Loading / Saving
 
 ```python
 null_dist = NullDistribution.load("./null_dist.npy")
-```
-
-### Providing a raw array
-
-```python
-import numpy as np
+null_dist.save("./my_null_dist.npy")
 null_dist = NullDistribution.from_array(my_scores_array)
 ```
 
@@ -299,7 +376,7 @@ harness = EvaluationHarness(
 
 results = harness.run(
     fixed_k_values=[1, 5, 7, 10, 20],
-    estimator_names=["higher_criticism", "benjamini_hochberg", "bonferroni"],
+    estimator_names=["higher_criticism", "storey_bh", "kneedle", "berk_jones"],
 )
 
 for r in results:
@@ -310,7 +387,7 @@ for r in results:
 
 ## Visualization
 
-RAGnaros includes built-in visualization utilities. Here are outputs from the demo on HotPotQA:
+RAGnaros includes 6 built-in visualization functions:
 
 ### Token Savings
 
@@ -322,7 +399,7 @@ Dynamic methods dramatically reduce token usage while preserving accuracy:
 
 ### k Distribution
 
-Each estimator adapts k per-query — most queries need only 1-2 documents:
+Each estimator adapts k per-query:
 
 <p align="center">
   <img src="assets/k_distribution.png" alt="k Distribution" width="80%"/>
@@ -330,7 +407,7 @@ Each estimator adapts k per-query — most queries need only 1-2 documents:
 
 ### Null vs Real Similarity Distribution
 
-The statistical foundation: real query-document similarities are clearly separated from the null (unrelated) distribution:
+The statistical foundation: real query-document similarities are clearly separated from background noise:
 
 <p align="center">
   <img src="assets/null_vs_real.png" alt="Null vs Real Distribution" width="80%"/>
@@ -342,16 +419,27 @@ The statistical foundation: real query-document similarities are clearly separat
   <img src="assets/efficiency.png" alt="Accuracy per Dollar" width="80%"/>
 </p>
 
+### Estimator Families
+
+<p align="center">
+  <img src="assets/estimator_families.png" alt="Estimator Families" width="80%"/>
+</p>
+
 ### Programmatic API
 
 ```python
-from ragnaros.visualization import cost_accuracy_plot, k_distribution_plot, null_vs_real_plot
+from ragnaros.visualization import (
+    cost_accuracy_plot,
+    k_distribution_plot,
+    null_vs_real_plot,
+    efficiency_plot,
+    comparison_heatmap,
+    sensitivity_plot,
+)
 
 fig = cost_accuracy_plot(results)
-fig.savefig("cost_vs_accuracy.png", dpi=150)
-
-fig = k_distribution_plot(results)
-fig = null_vs_real_plot(null_dist, real_sims)
+fig = comparison_heatmap(results)
+fig = sensitivity_plot(query_emb, doc_embs, null_dist)
 ```
 
 Requires `pip install "ragnaros[viz]"`.
@@ -362,8 +450,8 @@ Requires `pip install "ragnaros[viz]"`.
 
 | Component | Supported |
 |---|---|
-| Vector stores | Any LangChain `VectorStore` (Chroma, FAISS, Pinecone, Qdrant, Weaviate, …) |
-| Embedding models | Any LangChain `Embeddings` (OpenAI, HuggingFace, Cohere, Sentence Transformers, …) |
+| Vector stores | Any LangChain `VectorStore` (Chroma, FAISS, Pinecone, Qdrant, Weaviate, ...) |
+| Embedding models | Any LangChain `Embeddings` (OpenAI, HuggingFace, Cohere, Sentence Transformers, ...) |
 | LLMs | Any LangChain `BaseChatModel` or LCEL chain |
 | Python | 3.11+ |
 | Async | Full `asyncio` support |
@@ -374,10 +462,10 @@ Requires `pip install "ragnaros[viz]"`.
 
 ```bash
 git clone https://github.com/YarinShitrit/Ragnaros
-cd RAGnaros
+cd Ragnaros
 pip install -e ".[dev]"
 
-# Run tests
+# Run tests (156 tests)
 pytest
 
 # Run tests with coverage
@@ -399,11 +487,21 @@ This library is derived from research conducted during the Language Models Semin
 **Full title**: *Toward Optimal Retrieval: Dynamic Document Retrieval in Vector-Based Search*
 **Author**: Yarin Shitrit
 
-The research evaluates three statistical multiple-testing corrections adapted for the k-selection problem:
+### Original Research (v0.1)
 
-- **Bonferroni** (Bonferroni, 1936): controls FWER — most conservative.
-- **Benjamini-Hochberg** (Benjamini & Hochberg, 1995): controls FDR — balanced.
-- **Higher Criticism** (Donoho & Jin, 2004): detects sparse, weak signals — best empirical performance.
+Evaluated three statistical multiple-testing corrections for k-selection:
+- **Bonferroni** (1936): FWER control — most conservative
+- **Benjamini-Hochberg** (1995): FDR control — balanced
+- **Higher Criticism** (Donoho & Jin, 2004): sparse signal detection — best empirical performance
+
+### Research Extension (v0.2)
+
+Extended the framework with five additional methods from information theory, Bayesian statistics, and geometric analysis:
+- **Storey-BH** (Storey, 2002): Adaptive FDR with null proportion estimation
+- **Local FDR** (Efron, 2001): Empirical Bayes posterior probability
+- **Kneedle** (Satopaa et al., 2011): Elbow detection on similarity curves
+- **Berk-Jones** (Berk & Jones, 1979): Likelihood-ratio goodness-of-fit
+- **Beta-Uniform Mixture** (Pounds & Morris, 2003): EM-based p-value decomposition
 
 The null distribution methodology is inspired by the concept of testing query-document relevance against a background of unrelated query-document pairs, making the statistical threshold adaptive to the corpus.
 
